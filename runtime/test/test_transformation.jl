@@ -19,7 +19,7 @@ using .Transformation
         # Test empty sparse vector
         sv_empty = SparseVector{Float64}(10)
         @test get_nnz(sv_empty) == 0
-        @test sv_empty.length == 10
+        @test sv_empty.size == 10
         @test isempty(get_indices(sv_empty))
         @test isempty(get_values(sv_empty))
         
@@ -29,7 +29,7 @@ using .Transformation
         sv = SparseVector(indices, values, 10)
         
         @test get_nnz(sv) == 4
-        @test sv.length == 10
+        @test sv.size == 10
         @test get_indices(sv) == indices
         @test get_values(sv) == values
     end
@@ -61,7 +61,7 @@ using .Transformation
         
         # Verify structure is preserved
         @test get_nnz(sv_result) == get_nnz(sv)
-        @test sv_result.length == sv.length
+        @test sv_result.size == sv.size
         @test get_indices(sv_result) == get_indices(sv)
         @test get_values(sv_result) == get_values(sv)
         
@@ -115,7 +115,7 @@ using .Transformation
         sv_merged = apply_kernel(merge_kernel, sv1, sv2)
         
         # Verify merged structure
-        @test sv_merged.length == 10
+        @test sv_merged.size == 10
         
         # Convert to dense to verify correctness
         dense = to_dense(sv_merged)
@@ -208,7 +208,7 @@ using .Transformation
         sv_filtered = apply_kernel(filter_kernel, sv_shifted, 0.5)
         
         # Basic sanity checks
-        @test sv.length == n
+        @test sv.size == n
         @test get_nnz(sv_filtered) <= get_nnz(sv)
     end
     

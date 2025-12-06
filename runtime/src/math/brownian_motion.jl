@@ -12,7 +12,8 @@ using Statistics
 using LinearAlgebra
 
 export BrownianState, evolve!, get_displacement, reset!, set_seed!, 
-       generate_noise, apply_brownian_kernel, verify_non_repeatability
+       generate_noise, apply_brownian_kernel, verify_non_repeatability,
+       compute_path_statistics, wiener_process
 
 """
     BrownianState

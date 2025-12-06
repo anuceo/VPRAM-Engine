@@ -11,7 +11,7 @@ using SparseArrays
 using LinearAlgebra
 
 export SparseVector, apply_kernel, identity_kernel, scale_kernel, shift_kernel, 
-       merge_kernel, filter_kernel, get_nnz, get_values, get_indices
+       merge_kernel, filter_kernel, get_nnz, get_values, get_indices, to_dense, from_dense
 
 """
     SparseVector
@@ -110,7 +110,7 @@ Identity kernel - returns a copy of the input sparse vector.
 This proves the sparse vector structure can be reliably preserved.
 """
 function identity_kernel(sv::SparseVector{T}) where T
-    return SparseVector{T}(copy(sv.indices), copy(sv.values), sv.length)
+    return SparseVector{T}(copy(sv.indices), copy(sv.values), sv.size)
 end
 
 """
@@ -121,7 +121,7 @@ This proves the sparse vector values can be reliably transformed.
 """
 function scale_kernel(sv::SparseVector{T}, factor::Number) where T
     new_values = sv.values .* factor
-    return SparseVector{T}(copy(sv.indices), new_values, sv.length)
+    return SparseVector{T}(copy(sv.indices), new_values, sv.size)
 end
 
 """
@@ -132,7 +132,7 @@ This proves additive transformations work correctly on sparse vectors.
 """
 function shift_kernel(sv::SparseVector{T}, offset::Number) where T
     new_values = sv.values .+ offset
-    return SparseVector{T}(copy(sv.indices), new_values, sv.length)
+    return SparseVector{T}(copy(sv.indices), new_values, sv.size)
 end
 
 """
@@ -142,12 +142,12 @@ Merge kernel - combines two sparse vectors by summing values at matching indices
 This proves the sparse vector structure can handle complex operations.
 """
 function merge_kernel(sv1::SparseVector{T}, sv2::SparseVector{T}) where T
-    @assert sv1.length == sv2.length "Sparse vectors must have same length"
+    @assert sv1.size == sv2.size "Sparse vectors must have same length"
     
     all_indices = vcat(sv1.indices, sv2.indices)
     all_values = vcat(sv1.values, sv2.values)
     
-    return SparseVector{T}(all_indices, all_values, sv1.length)
+    return SparseVector{T}(all_indices, all_values, sv1.size)
 end
 
 """
@@ -161,7 +161,7 @@ function filter_kernel(sv::SparseVector{T}, threshold::Number) where T
     new_indices = sv.indices[mask]
     new_values = sv.values[mask]
     
-    return SparseVector{T}(new_indices, new_values, sv.length)
+    return SparseVector{T}(new_indices, new_values, sv.size)
 end
 
 """
@@ -171,7 +171,7 @@ Convert sparse vector to dense array representation.
 Useful for verification and testing.
 """
 function to_dense(sv::SparseVector{T}) where T
-    dense = zeros(T, sv.length)
+    dense = zeros(T, sv.size)
     for (idx, val) in zip(sv.indices, sv.values)
         dense[idx] = val
     end
