@@ -8,6 +8,12 @@ Vector Parallel Random Access Memory
   - Brownian motion for non-repeatability
   - Cyclotomic-polyhedral spatial indexing
   - Quaternion state translation
+  - **`ffi/`** - FFI interface for Rust integration
+
+- **`rust/`** - Rust integration layer
+  - Zero-copy FFI with C-ABI compatible structures
+  - HOGS (Hyperbolic Orthogonal Gang Scheduler) for safe concurrency
+  - Memory safety and thread-safe kernel execution
 
 ## Mathematical Integrity Proven
 
@@ -34,11 +40,51 @@ See `runtime/README.md` for detailed documentation.
 
 ## Running Tests
 
+### Julia Mathematical Core
 ```bash
 cd runtime
 julia test/runtests.jl
 ```
 
+### Rust Integration Layer
+```bash
+cd rust
+cargo test
+```
+
+## Architecture
+
+The VPRAM Engine uses a **hybrid Julia-Rust architecture**:
+
+```
+┌─────────────────────────────────────────┐
+│   Rust Application (Systems Layer)      │
+│   • Concurrency control (HOGS)          │
+│   • Memory safety                        │
+│   • Thread synchronization               │
+└──────────────┬──────────────────────────┘
+               │ Zero-Copy FFI (C-ABI)
+               ↓
+┌─────────────────────────────────────────┐
+│   Julia Mathematical Core                │
+│   • Sparse vectors (Task 1)              │
+│   • Brownian motion (Task 1)             │
+│   • Spatial indexing (Task 2)            │
+│   • Quaternions (Task 3)                 │
+└─────────────────────────────────────────┘
+```
+
+**Key Features:**
+- **Zero-copy data transfer** using `#[repr(C)]` structures
+- **Cell-based locking** for safe concurrent kernel execution
+- **Automatic Brownian evolution** ensures non-repeatability
+- **Validated outputs**: Quaternions, Cell IDs checked before return
+
+See `rust/README.md` for detailed FFI documentation.
+
 ## Status
 
-✅ Core mathematical proofs complete - Ready for Rust Backend integration
+✅ Core mathematical proofs complete (215 tests)  
+✅ Rust FFI layer implemented  
+✅ HOGS scheduler with spatial synchronization  
+⏳ jlrs integration pending

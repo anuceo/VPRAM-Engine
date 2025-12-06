@@ -1,0 +1,36 @@
+[package]
+name = "vpram-engine"
+version = "0.1.0"
+edition = "2021"
+authors = ["VPRAM Team"]
+description = "Vector Parallel Random Access Memory Engine - Rust Integration Layer"
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/anuceo/VPRAM-Engine"
+
+[lib]
+name = "vpram_engine"
+path = "src/lib.rs"
+
+[dependencies]
+# jlrs will be added when ready to integrate Julia runtime
+# jlrs = { version = "0.19", features = ["multi-rt"] }
+
+[dev-dependencies]
+
+[features]
+default = []
+# Feature flag for when jlrs integration is ready
+julia-runtime = []
+
+[[example]]
+name = "basic_kernel"
+path = "examples/basic_kernel.rs"
+
+[profile.release]
+opt-level = 3
+lto = true
+codegen-units = 1
+
+[profile.dev]
+opt-level = 0
+debug = true
