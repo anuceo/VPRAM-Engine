@@ -109,10 +109,11 @@ end
 
 """
     apply_brownian_kernel(values::Vector{T}, dt::Float64, volatility::Float64, 
-                          seed::Union{Int, Nothing} = nothing) where T <: Number
+                          seed::Union{Int, Nothing} = nothing) where T <: Number -> Vector{Float64}
 
 Apply Brownian motion to a vector of values.
 Each value evolves independently according to Brownian motion.
+Note: Returns Vector{Float64} regardless of input type T due to noise being Float64.
 """
 function apply_brownian_kernel(values::Vector{T}, dt::Float64, volatility::Float64,
                                seed::Union{Int, Nothing} = nothing) where T <: Number

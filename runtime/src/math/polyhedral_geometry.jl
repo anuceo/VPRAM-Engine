@@ -64,7 +64,7 @@ Uses bit manipulation and prime number mixing for good distribution.
 function hash_coordinates(x::Int64, y::Int64, z::Int64)
     # Constants based on large primes for good mixing
     # Convert signed integers to unsigned with reinterpret to preserve bit pattern
-    h = UInt64(0x517cc1b727220a95)  # Random prime
+    h = UInt64(0x517cc1b727220a95)  # Fixed prime constant for deterministic hashing
     
     # Mix x coordinate - reinterpret to handle negative values
     ux = reinterpret(UInt64, x)

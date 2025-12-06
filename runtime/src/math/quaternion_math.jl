@@ -27,7 +27,7 @@ struct Quaternion
 end
 
 """
-    normalize_quaternion(q::Quaternion)
+    normalize_quaternion(q::Quaternion) -> Quaternion
 
 Normalize a quaternion to unit length.
 Returns a new Quaternion with ||q|| = 1.
