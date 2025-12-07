@@ -1,0 +1,28 @@
+# Rust
+rust/target/
+rust/Cargo.lock
+**/*.rs.bk
+
+# Build artifacts
+*.o
+*.a
+*.so
+*.dylib
+*.dll
+
+# C++ build
+cpp_client/build/
+cpp_client/generated/
+*.pb.cc
+*.pb.h
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db

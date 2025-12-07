@@ -1,0 +1,107 @@
+syntax = "proto3";
+
+package vpram;
+
+// VPRAM gRPC service definition
+service HOGSSubmission {
+  // Submit an action to be processed by HOGS
+  rpc SubmitAction(ActionRequest) returns (ActionResponse);
+  
+  // Query the status of an entity
+  rpc QueryEntityStatus(EntityQuery) returns (EntityStatus);
+  
+  // Batch submit multiple actions
+  rpc SubmitActionBatch(ActionBatchRequest) returns (ActionBatchResponse);
+}
+
+// Action request from client
+message ActionRequest {
+  // Unique entity ID
+  uint64 entity_id = 1;
+  
+  // 3D position
+  double position_x = 2;
+  double position_y = 3;
+  double position_z = 4;
+  
+  // Kernel type to apply
+  KernelType kernel_type = 5;
+  
+  // Kernel parameter
+  double kernel_param = 6;
+  
+  // Sparse vector data
+  SparseVectorData sparse_vector = 7;
+}
+
+// Sparse vector data structure
+message SparseVectorData {
+  repeated uint32 indices = 1;
+  repeated double values = 2;
+  uint32 capacity = 3;
+}
+
+// Kernel types
+enum KernelType {
+  IDENTITY = 0;
+  SCALE = 1;
+  SHIFT = 2;
+  FILTER = 3;
+}
+
+// Action response
+message ActionResponse {
+  // Status code
+  StatusCode status = 1;
+  
+  // Cell ID computed for the entity
+  uint64 cell_id = 2;
+  
+  // Quaternion result [w, x, y, z]
+  repeated double quaternion = 3;
+  
+  // Updated sparse vector
+  SparseVectorData updated_vector = 4;
+  
+  // Error message if any
+  string error_message = 5;
+  
+  // Execution time in microseconds
+  uint64 execution_time_us = 6;
+}
+
+// Status codes
+enum StatusCode {
+  SUCCESS = 0;
+  BUFFER_OVERFLOW = 1;
+  UNKNOWN_KERNEL = 2;
+  RUNTIME_ERROR = 3;
+  CELL_LOCKED = 4;
+  INVALID_INPUT = 5;
+}
+
+// Entity query
+message EntityQuery {
+  uint64 entity_id = 1;
+}
+
+// Entity status
+message EntityStatus {
+  uint64 entity_id = 1;
+  uint64 cell_id = 2;
+  repeated double quaternion = 3;
+  SparseVectorData sparse_vector = 4;
+  bool is_active = 5;
+}
+
+// Batch action request
+message ActionBatchRequest {
+  repeated ActionRequest actions = 1;
+}
+
+// Batch action response
+message ActionBatchResponse {
+  repeated ActionResponse responses = 1;
+  uint32 successful_count = 2;
+  uint32 failed_count = 3;
+}
