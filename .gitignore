@@ -10,6 +10,12 @@ rust/Cargo.lock
 *.dylib
 *.dll
 
+# C++ build
+cpp_client/build/
+cpp_client/generated/
+*.pb.cc
+*.pb.h
+
 # IDE
 .vscode/
 .idea/
