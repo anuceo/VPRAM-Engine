@@ -7,7 +7,7 @@ use std::collections::HashMap;
 use std::net::SocketAddr;
 use std::sync::Arc;
 use tokio::sync::{RwLock, mpsc};
-use tokio::net::TcpListener;
+use tokio::net::{TcpListener, TcpStream};
 use tonic::{transport::Server, Request, Response, Status};
 
 use crate::vpram_hogs::{HOGS, HOGSConfig};
@@ -294,6 +294,37 @@ impl HogsSubmission for ConnectionBroker {
     }
 }
 
+/// Handle a WebSocket connection
+async fn handle_websocket_connection(stream: TcpStream) -> Result<(), Box<dyn std::error::Error>> {
+    use tokio_tungstenite::accept_async;
+    use futures_util::{StreamExt, SinkExt};
+    
+    let ws_stream = accept_async(stream).await?;
+    let (mut ws_sender, mut ws_receiver) = ws_stream.split();
+    
+    println!("✓ WebSocket connection established");
+    
+    // Echo messages back (simplified implementation)
+    while let Some(msg) = ws_receiver.next().await {
+        match msg {
+            Ok(msg) => {
+                if msg.is_close() {
+                    println!("WebSocket client disconnected");
+                    break;
+                }
+                // Echo message back
+                ws_sender.send(msg).await?;
+            }
+            Err(e) => {
+                eprintln!("WebSocket receive error: {}", e);
+                break;
+            }
+        }
+    }
+    
+    Ok(())
+}
+
 /// VPRAM server configuration
 pub struct ServerConfig {
     pub grpc_addr: SocketAddr,
@@ -315,6 +346,7 @@ impl Default for ServerConfig {
 pub struct VPRAMServer {
     config: ServerConfig,
     broker: Arc<ConnectionBroker>,
+    #[allow(dead_code)] // Reserved for WebSocket broadcast functionality
     ws_receiver: Arc<RwLock<Option<mpsc::UnboundedReceiver<WSMessage>>>>,
 }
 
@@ -356,14 +388,28 @@ impl VPRAMServer {
     /// Start the WebSocket server
     pub async fn start_websocket(&self) -> Result<(), Box<dyn std::error::Error>> {
         let addr = self.config.ws_addr;
-        let _listener = TcpListener::bind(&addr).await?;
+        let listener = TcpListener::bind(&addr).await?;
         
         println!("Starting WebSocket server on {}", addr);
+        println!("✓ WebSocket server ready - listening for connections");
         
-        // This is a simplified WebSocket implementation
-        // In production, you'd handle multiple connections and proper message routing
-        
-        Ok(())
+        // Keep the server running and accept connections
+        loop {
+            match listener.accept().await {
+                Ok((stream, addr)) => {
+                    println!("WebSocket connection from: {}", addr);
+                    // Spawn a task to handle this connection
+                    tokio::spawn(async move {
+                        if let Err(e) = handle_websocket_connection(stream).await {
+                            eprintln!("WebSocket connection error: {}", e);
+                        }
+                    });
+                }
+                Err(e) => {
+                    eprintln!("WebSocket accept error: {}", e);
+                }
+            }
+        }
     }
     
     /// Run the server (both gRPC and WebSocket)
