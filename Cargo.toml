@@ -1,0 +1,10 @@
+[package]
+name = "vpram-engine"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+tokio = { version = "1.41", features = ["full"] }
+tonic = "0.12"
+tokio-tungstenite = "0.24"
+futures-util = "0.3"
