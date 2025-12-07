@@ -46,10 +46,12 @@
 
 pub mod vpram_ffi;
 pub mod vpram_hogs;
+pub mod server;
 
 // Re-export main types for convenience
 pub use vpram_ffi::{SparseBuffer, KernelResult, KernelType, execute_vpram_kernel};
 pub use vpram_hogs::{HOGS, HOGSConfig, HOGSStats};
+pub use server::{VPRAMServer, ServerConfig, ConnectionBroker};
 
 /// Version information
 pub const VERSION: &str = env!("CARGO_PKG_VERSION");
