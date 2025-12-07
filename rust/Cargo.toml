@@ -27,8 +27,11 @@ futures-util = "0.3"
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 
-# jlrs will be added when ready to integrate Julia runtime
-# jlrs = { version = "0.19", features = ["multi-rt"] }
+# Julia FFI integration (uncomment when Julia dev headers are available)
+# Requires: Julia 1.6+ installed with development headers
+# On Debian/Ubuntu: apt-get install julia-dev
+# On macOS: brew install julia
+# jlrs = { version = "0.19" }
 
 [build-dependencies]
 tonic-build = "0.11"
@@ -37,7 +40,7 @@ tonic-build = "0.11"
 
 [features]
 default = []
-# Feature flag for when jlrs integration is ready
+# Feature flag for Julia runtime integration (requires jlrs dependency)
 julia-runtime = []
 
 [[bin]]
